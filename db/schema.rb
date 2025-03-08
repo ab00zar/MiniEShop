@@ -10,9 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_06_103358) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_08_094517) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "discounts", force: :cascade do |t|
+    t.bigint "product_id", null: false
+    t.integer "discount_type", default: 0, null: false
+    t.integer "min_quantity", null: false
+    t.integer "max_quantity"
+    t.decimal "percentage", precision: 5, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_discounts_on_product_id"
+  end
 
   create_table "products", force: :cascade do |t|
     t.string "code"
@@ -22,4 +33,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_06_103358) do
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_products_on_code", unique: true
   end
+
+  add_foreign_key "discounts", "products"
 end
