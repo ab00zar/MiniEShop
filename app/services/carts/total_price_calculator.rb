@@ -7,20 +7,35 @@ module Carts
 
     def call(query)
       items = @query_parser.parse(query)
-      calculate_total(items)
+      PriceExplanationPresenter.new(calculate_total(items)).call
     end
 
     private
 
     def calculate_total(items)
-      total = 0
-      items.each do |quantity, code|6
+      items.map do |quantity, code|
         product = Product.find_by(code: code)
         discount = @discount_finder.new(product, quantity).call
-        sub_total = quantity * product.price
-        discount.present? ? total += sub_total * (1- discount.percentage / 100).round(2) : total += sub_total
+        [
+          product.code,
+          discount ? discount.percentage : '',
+          total_without_discount(product, quantity),
+          discounted_price(product, quantity, discount),
+          total(product, quantity, discount)
+        ]
       end
-      total
+    end
+
+    def total_without_discount(product, quantity)
+      quantity * product.price
+    end
+
+    def discounted_price(product, quantity, discount)
+      discount.present? ? product.price * quantity * (discount.percentage / 100) : 0
+    end
+
+    def total(product, quantity, discount)
+      total_without_discount(product, quantity) - discounted_price(product, quantity, discount)
     end
   end
 end
