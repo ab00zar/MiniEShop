@@ -1,6 +1,7 @@
 class PriceExplanationPresenter
-  def initialize(data)
-    @data = data
+
+  def initialize(items)
+    @items = items
   end
 
   def call
@@ -17,25 +18,29 @@ class PriceExplanationPresenter
   private
 
   def total_without_discount_explanation
-    "#{@data.map {|e| e[2]}.join(' + ')} = #{total_without_discount}"
+    "#{@items.map(&:subtotal).join(' + ')} = #{total_without_discount}"
   end
 
   def total_without_discount
-    @data.map {|e| e[2]}.sum
+    @total_without_discount ||= @items.sum(&:subtotal)
   end
 
-  def discount_info
-    @discount_info ||= @data.map do |e|
-      e[1].to_i > 0 ? [e[3], e[1], e[0]] : nil
-    end.compact
+  def discount_items
+    @discount_items ||= @items.select { |item| item.discount_percentage > 0 }
   end
 
   def total_discount
-    @total_discount ||= discount_info.sum { |e| e[0] }
+    @total_discount ||= @items.sum(&:discount_amount)
   end
 
   def discount_explanation
-    "#{discount_info.map {|discounted_price, percentage, code| "#{discounted_price} (#{percentage}% discount on #{code})"}.join(' + ') } = #{total_discount}"
+    discount_items.empty? ? "0" : "#{format_discount_items} = #{total_discount}"
+  end
+
+  def format_discount_items
+    discount_items.map do |item|
+      "#{item.discount_amount} (#{item.discount_percentage}% discount on #{item.code})"
+    end.join(' + ')
   end
 
   def total_explanation
@@ -43,8 +48,6 @@ class PriceExplanationPresenter
   end
 
   def total_price
-    total_without_discount - total_discount
+    @total_price ||= total_without_discount - total_discount
   end
-
-
 end

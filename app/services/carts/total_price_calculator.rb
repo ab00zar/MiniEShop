@@ -1,41 +1,26 @@
 module Carts
   class TotalPriceCalculator
-    def initialize(query_parser: Carts::QueryParser, discount_finder: Carts::DiscountFinderService)
+    def initialize(
+      query:,
+      query_parser: Carts::QueryParser,
+      cart_item_builder: Carts::CartItemFactory,
+      price_explanation_factory: PriceExplanationPresenter
+    )
+      @query = query
       @query_parser = query_parser
-      @discount_finder = discount_finder
+      @cart_item_builder = cart_item_builder
+      @price_explanation_factory = price_explanation_factory
     end
 
-    def call(query)
-      items = @query_parser.parse(query)
-      PriceExplanationPresenter.new(calculate_total(items)).call
+    def call
+      items = @cart_item_builder.new(parsed_query).call
+      @price_explanation_factory.new(items).call
     end
 
     private
 
-    def calculate_total(items)
-      items.map do |quantity, code|
-        product = Product.find_by(code: code)
-        discount = @discount_finder.new(product, quantity).call
-        [
-          product.code,
-          discount ? discount.percentage : '',
-          total_without_discount(product, quantity),
-          discounted_price(product, quantity, discount),
-          total(product, quantity, discount)
-        ]
-      end
-    end
-
-    def total_without_discount(product, quantity)
-      quantity * product.price
-    end
-
-    def discounted_price(product, quantity, discount)
-      discount.present? ? product.price * quantity * (discount.percentage / 100) : 0
-    end
-
-    def total(product, quantity, discount)
-      total_without_discount(product, quantity) - discounted_price(product, quantity, discount)
+    def parsed_query
+      @query_parser.parse(@query)
     end
   end
 end
