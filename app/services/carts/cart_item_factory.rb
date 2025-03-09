@@ -20,7 +20,7 @@ module Carts
 
     def build_cart_items(quantity, code)
       product = @product_finder.call(code: code)
-      return unless product
+      raise StandardError, "Product code: #{code} is NOT found!" unless product
 
       discount = @discount_finder.new(product, quantity).call
       @cart_item.new(
