@@ -13,15 +13,9 @@ module Carts
     end
 
     def call
-
+      parsed_query = @query_parser.new(@query).parse
       items = @cart_item_builder.new(parsed_query).call
       @price_explanation_factory.new(items).call
-    end
-
-    private
-
-    def parsed_query
-      @query_parser.new(@query).parse
     end
   end
 end
