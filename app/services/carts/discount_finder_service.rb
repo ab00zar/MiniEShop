@@ -9,6 +9,7 @@ module Carts
       @product
         .discounts.where("min_quantity <= ?", @quantity)
         .where("max_quantity >= ? OR max_quantity IS NULL", @quantity)
+        .order(percentage: :desc)
         .first
     end
   end
