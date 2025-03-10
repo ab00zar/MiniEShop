@@ -34,10 +34,17 @@ RSpec.describe Api::V1::ProductsController, type: :request do
     end
 
     context 'when product is not found' do
-      it 'returns nil and does not update anything' do
-        expect {
-          patch :update, params: { code: "NONEXISTENT", price: 25.99 }
-        }.to raise_error(NoMethodError)
+      it 'returns not_found status' do
+        put "/api/v1/products?code=NONEXISTENT", params: { price: 25.99 }, as: :json
+        expect(response).to have_http_status(:not_found)
+        expect(JSON.parse(response.body)['error']).to eq('Product not found')
+      end
+    end
+
+    context 'when price is not a number' do
+      it 'returns bad_request status' do
+        put "/api/v1/products?code=ABC123", params: { price: 'abc' }, as: :json
+        expect(JSON.parse(response.body)['price']).to eq(["is not a number"])
       end
     end
   end
