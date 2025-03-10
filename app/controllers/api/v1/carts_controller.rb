@@ -4,7 +4,7 @@ module Api::V1
       total = Carts::TotalPriceCalculator.new(query: params[:items]).call
       render json: total
     rescue StandardError => e
-      render json: { error: 'something happened!' }
+      render json: { error: e || 'Something happened!' }
     end
   end
 end
