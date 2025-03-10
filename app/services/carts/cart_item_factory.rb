@@ -2,7 +2,7 @@ module Carts
   class CartItemFactory
     def initialize(
       query,
-      product_finder: Product.method(:find_by),
+      product_finder: Product,
       discount_finder: Carts::DiscountFinderService,
       cart_item: Carts::CartItem
     )
@@ -13,13 +13,18 @@ module Carts
     end
 
     def call
-      @query.map { |quantity, code| build_cart_items(quantity, code) }.compact
+      product_codes = @query.map { |_, code| code }
+      products = @product_finder.where(code: product_codes).includes(:discounts).index_by(&:code)
+
+      @query.map do |quantity, code|
+        build_cart_items(quantity, code, products)
+      end.compact
     end
 
     private
 
-    def build_cart_items(quantity, code)
-      product = @product_finder.call(code: code)
+    def build_cart_items(quantity, code, products)
+      product = products[code]
       raise StandardError, "Product code: #{code} is NOT found!" unless product
 
       discount = @discount_finder.new(product, quantity).call
