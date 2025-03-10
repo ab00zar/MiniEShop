@@ -9,5 +9,6 @@ class CreateDiscounts < ActiveRecord::Migration[8.0]
 
       t.timestamps
     end
+    add_index :discounts, [:min_quantity, :max_quantity, "percentage DESC"], name: "idx_discounts_quantity_percentage"
   end
 end
