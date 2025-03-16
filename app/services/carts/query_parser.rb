@@ -7,8 +7,6 @@ module Carts
     end
 
     def parse
-      validate_query
-      items = @query.split(',').map(&:strip)
       items.each { |item| validate_item(item) }
 
       items
@@ -18,8 +16,8 @@ module Carts
 
     private
 
-    def validate_query
-      raise ArgumentError, "Query must be a string" unless @query.is_a?(String)
+    def items
+      @query.split(',').map(&:strip)
     end
 
     def validate_item(item)
