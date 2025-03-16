@@ -25,7 +25,7 @@ module Carts
 
     def build_cart_items(quantity, code, products)
       product = products[code]
-      raise StandardError, "Product code: #{code} is NOT found!" unless product
+      raise ActiveRecord::RecordNotFound, "Product code: #{code} is NOT found!" unless product
 
       discount = @discount_finder.new(product, quantity).call
       @cart_item.new(
