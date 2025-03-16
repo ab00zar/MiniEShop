@@ -47,6 +47,7 @@ group :development, :test do
 
   gem 'pry-rails'
   gem 'rspec-rails'
+  gem 'active_model_serializers'
 end
 
 

@@ -4,12 +4,12 @@ module Api::V1
 
     def index
       @products = Product.all
-      render json: @products, status: :ok
+      render json: @products, each_serializer: ProductSerializer, status: :ok
     end
 
     def update
       if @product.update(price: params[:price])
-        render json: @product, status: :ok
+        render json: @product, each_serializer: ProductSerializer, status: :ok
       else
         render json: @product.errors, status: :unprocessable_entity
       end
