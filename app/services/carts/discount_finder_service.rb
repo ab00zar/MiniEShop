@@ -8,9 +8,8 @@ module Carts
     def call
       @product
         .discounts.where("min_quantity <= ?", @quantity)
-        .where("max_quantity >= ? OR max_quantity IS NULL", @quantity)
-        .order(percentage: :desc)
-        .first
+        .select { |d| d.min_quantity <= @quantity && (d.max_quantity.nil? || d.max_quantity >= @quantity) }
+        .max_by(&:percentage)
     end
   end
 end
