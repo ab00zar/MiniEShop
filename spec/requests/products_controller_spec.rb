@@ -37,7 +37,7 @@ RSpec.describe Api::V1::ProductsController, type: :request do
       it 'returns not_found status' do
         put "/api/v1/products?code=NONEXISTENT", params: { price: 25.99 }, as: :json
         expect(response).to have_http_status(:not_found)
-        expect(JSON.parse(response.body)['error']).to eq('Product not found')
+        expect(JSON.parse(response.body)['error']['message']).to eq('Product with code NONEXISTENT not found')
       end
     end
 

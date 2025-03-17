@@ -20,7 +20,7 @@ module Api::V1
     def find_product
       @product = Product.find_by(code: params[:code])
       unless @product
-        render json: { error: 'Product not found' }, status: :not_found
+        raise ActiveRecord::RecordNotFound, "Product with code #{params[:code]} not found" unless @product
       end
     end
 
