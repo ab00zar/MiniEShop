@@ -17,7 +17,7 @@ module Carts
     private
 
     def items
-      @query.split(',').map(&:strip)
+      @items ||= @query.split(',').map(&:strip)
     end
 
     def validate_item(item)
