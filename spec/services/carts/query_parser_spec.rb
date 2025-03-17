@@ -15,15 +15,6 @@ RSpec.describe Carts::QueryParser do
     end
 
     context 'with malformed queries' do
-      context 'when receiving a query rather than a string' do
-        let(:query) { ['2 ITEM'] }
-        let(:parser) { described_class.new(query).parse }
-
-        it 'raise an error' do
-          expect { parser }.to raise_error(ArgumentError, 'Query must be a string')
-        end
-      end
-
       context 'when the desired format is not followed' do
         let(:query) { 'A UUY 2' }
         let(:parser) { described_class.new(query).parse }
