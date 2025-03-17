@@ -1,6 +1,6 @@
 RSpec.describe Carts::DiscountFinderService do
   describe '#call' do
-    let(:product) { Product.create(code: 'Test', name: 'Test Product', price: 99.99) }
+    let(:product) { Product.create(code: 'TEST', name: 'Test Product', price: 99.99) }
     let(:quantity) { 5 }
     let(:service) { described_class.new(product, quantity) }
 

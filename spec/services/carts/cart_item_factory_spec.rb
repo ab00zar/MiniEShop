@@ -82,7 +82,7 @@ RSpec.describe Carts::CartItemFactory do
           cart_item: cart_item_class
         )
 
-        expect { factory_with_missing_product.call }.to raise_error(StandardError, "Product code: C is NOT found!")
+        expect { factory_with_missing_product.call }.to raise_error(ActiveRecord::RecordNotFound, "Product code: C is NOT found!")
       end
     end
   end
